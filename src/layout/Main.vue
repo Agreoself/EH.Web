@@ -10,13 +10,11 @@
       <!--header部分-->
       <el-header>
         <!--header部分控件-->
-        <common-header></common-header>
-    
+        <common-header />
       </el-header>
-      <el-main>
-        <div class="tab">
-          <!-- <Tab /> -->
-        </div>
+      <Tab style="margin-left: 10px;"/>
+      <el-main id="mainbody">
+       
         <div>
           <!--左侧栏 和 header部分对于整个后台部分都是不变的，唯一变的就是上面3的部分，这里就通过router-view来展示所需控件-->
           <router-view />
@@ -37,7 +35,18 @@ import Tab from "./header/MulitTab.vue";
   background-color: #ffffff;
 }
 
+// .el-main {
+//   padding-top: 0;
+// }
+
 .el-main {
-  padding-top: 0;
+  --el-main-padding: 5px 10px;
+  display: block;
+  flex: 1;
+  flex-basis: auto;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: var(--el-main-padding);
 }
+ 
 </style>

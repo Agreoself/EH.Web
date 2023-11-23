@@ -1,53 +1,56 @@
 <template>
   <el-drawer v-model="dialogVisible" :title="dialogTitle" direction="rtl" size="30%">
     <Form :formInfo="formInfo" :operateType="props.operateType" />
-    <template #footer v-if="formInfo.hasButton">
-      <div style="flex: auto">
-        <template v-for="button in formInfo.buttonInfo">
-          <el-button v-if="shouldDisplay(button)" :size="button.size" :type="button.type" :icon="button.icon"
-            @click="button.click">{{ button.text
-            }}</el-button>
-        </template>
-      </div>
-    </template>
-  </el-drawer>
- 
+  </el-drawer> 
 </template>
 
 <script setup>
-import { AddMenu, GetParentMenuList, UpdateMenu } from "@/api/menu";
+import { Menu } from "@/api/system/menu";
+const menu=new Menu();
 import { message } from "@/utils/message";
 import { page } from '@/utils/pageinfo'
 import Form from '@/components/form/index.vue'
 
-const props = defineProps(["operateType", "formInfo", "parentMenuList"]);
+const props = defineProps(["operateType", "formValue", "parentMenuList"]);
 const emits = defineEmits(["operateBack"]);
 let dialogVisible = ref(true);
 const dialogTitle = ref(props.operateType == "add" ? "添加菜单" : "编辑菜单");
 
 let parentMenuList = ref([]);
-let defaultParams = ref({ label: "menuName", value: "id", checkStrictly: true, emitPath: false });
-let options = ref([
-  {
-    value: 0,
-    label: "目录",
-  },
-  {
-    value: 1,
-    label: "组件",
-  },
-]);
+let defaultParams = ref({ label: "menuName", value: "id", checkStrictly: true, emitPath: false }); 
+let options = ref([{ value: 0,label: "目录",},{value: 1,label: "组件",},]);
+let form=toRef(props.formValue); 
+  
+onMounted(() => {
+  menu.GetParentMenuList().then((res) => {
+    if (res.code == "000") {
+      // console.log(res.result)
+      // // let s= res.result.map(item=>{return {
+      // //   menuName:item.menuName,
+      // //   id:item.id,
+      // //   children:item.children
+      // // }}); 
+      parentMenuList.value.push({ "menuName": "根目录", id: '00000000-0000-0000-0000-000000000000' });
+      res.result.forEach(element => {
+        parentMenuList.value.push(element);
+      }); 
+    
+      // console.log(parentMenuList.value)
+    }
+  }); 
+}) 
 
 const cancel = () => {
   dialogVisible.value = false;
+  emits('operateBack', true)
 };
 
-const addMenu = () => {
-
+const addMenu = () => { 
+  form.value.createBy='';
+  form.value.modifyBy='';
   let postJson = JSON.stringify(form.value)
-  console.log(postJson)
-
-  AddMenu(postJson).then(res => {
+  console.log(postJson) 
+  menu.add(postJson).then(res => {
     if (res.code == "000") {
       message.success("添加成功")
       dialogVisible.value = false;
@@ -61,7 +64,7 @@ const updateMenu = () => {
   console.log(form.value)
 
   let postJson = JSON.stringify(form.value)
-  UpdateMenu(postJson).then(res => {
+  menu.update(postJson).then(res => {
     if (res.code == "000") {
       message.success("操作成功")
       dialogVisible.value = false;
@@ -175,7 +178,7 @@ let fields = [
 let buttonInfo = [
 { size: 'default', type: 'primary', icon: 'Plus', click: addMenu, text: '新增', operateType: ['add'] }
 , { size: 'default', type: 'primary', icon: 'Edit', click: updateMenu, text: '编辑', operateType: ['update'] }
-, { size: 'default', type: 'default', icon: 'Cancel', click: cancel, text: '取消', operateType: ['add','update'] }
+, { size: 'default', type: 'default', icon: 'RefreshLeft', click: cancel, text: '取消', operateType: ['add','update'] }
 ]
 
 let formInfo = toRef(page.formInfo.createNew());
@@ -187,55 +190,27 @@ formInfo.value.buttonInfo = buttonInfo;
 return formInfo;
 }
 
-let formInfo = props.formInfo;
+// let formInfo = props.formInfo;
+let formInfo=gerenalFormInfo();
+// console.log(formInfo)
+  
 
-const shouldDisplay = (field) => {
-  // 根据传入的操作类型决定是否展示该字段 
-  console.log(field)
-  if (!field.operateType.includes(props.operateType)) {
-    return false;
-  }
-  if (typeof field.displayCondition === 'function') {
-    return field.displayCondition(formData);
-  }
-  return true;
-};
-
-
-const selectMenuType = () => {
-  if (form.menuType == 0) {
-    GetParentMenuList().then((res) => {
-      if (res.code == "000") {
-        console.log(res.result);
-        parentMenuList.value = res.result;
-        parentMenuList.value.push({ "menuName": "根目录", id: null });
-      }
-    });
-  }
-};
-
-
-
-onMounted(() => {
-  GetParentMenuList().then((res) => {
-    if (res.code == "000") {
-      console.log(res.result);
-      parentMenuList.value = res.result;
-      parentMenuList.value.push({ "menuName": "根目录", id: null });
-    }
-  }); 
-})
-
-
-
-
+// const selectMenuType = () => {
+//   if (form.menuType == 0) {
+//     menu.GetParentMenuList().then((res) => {
+//       if (res.code == "000") {
+//         console.log(res.result);
+//         parentMenuList.value = res.result;
+//         parentMenuList.value.push({ "menuName": "根目录", id: null });
+//       }
+//     });
+//   }
+// };
 
 
 
 </script>
 
 <style scoped>
-.dialog-footer {
-  float: right;
-}
+ 
 </style>

@@ -8,10 +8,17 @@
           <Close />
         </el-icon>
       </div>
+      <!-- <el-tag v-for="(item, index) in processList" :key="index" 
+       class="tag" :class="{ active: item.active }" effect="dark" type="success"  
+      :closable="index > 0" 
+      @mousedown="(e) => {onTap(e, item);}"
+      @close="onDel(index)"  >
+    {{ item.label }}
+  </el-tag> -->
     </el-scrollbar>
-
-    <ul v-show="menu.visible" :style="menu.style" class="contextmenu">
-      <li v-if="isHit" @click="onClose('current')">关闭当前</li>
+ 
+    <ul v-show="state.menu.visible" :style="state.menu.style" class="contextmenu">
+      <li v-if="state.isHit" @click="onClose('current')">关闭当前</li>
       <li @click="onClose('other')">关闭其他</li>
       <li @click="onClose('all')">关闭所有</li>
     </ul>
@@ -21,7 +28,7 @@
 <script setup>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-
+import {Close,Place} from '@element-plus/icons-vue'
 const store = useStore();
 const router = useRouter();
 
@@ -37,6 +44,7 @@ let state = reactive({
   },
   isHit: false,
 });
+
 
 const processList = computed(() => {
   return store.getters.processList;
@@ -78,7 +86,7 @@ const toPath = () => {
   const active = processList.value.find((e) => e.active);
   if (!active) {
     const next = processList.value[processList.value.length - 1];
-    router.push(next ? next.value : '/');
+    router.push(next ? next.value : '/homepage');
   }
 };
 
@@ -92,14 +100,14 @@ const onClose = (name) => {
     case 'other':
       store.commit(
         'process/SET_PROCESS',
-        processList.value.filter((e) => e.value == current.value || e.value == '/')
+        processList.value.filter((e) => e.value == current.value || e.value == '/homepage')
       );
       break;
 
     case 'all':
       store.commit(
         'process/SET_PROCESS',
-        processList.value.filter((e) => e.value == '/')
+        processList.value.filter((e) => e.value == '/homepage')
       );
       break;
   }
@@ -109,15 +117,22 @@ const onClose = (name) => {
 </script>
 
 <style lang="scss" scoped>
+
+.tag{
+    height: 28px;
+    line-height: 30px;
+    padding: 0 10px;
+    margin: 1px 5px 0px 5px;
+}
 .process-wrap {
   display: flex;
-  height: 35px;
+  height: 32px;
   position: relative;
-  padding: 0 10px;
+  padding: 0 0px;
   // margin-bottom: 20px;
-  background: #fff;
+  background:#ffffff;
   border-bottom: 1px solid #d8dce5;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
+  //  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
 
   .process__left,
   .process__right {
@@ -154,14 +169,14 @@ const onClose = (name) => {
     border-radius: 3px;
     border: 1px solid #d8dce5;
     min-width: 50px;
-    height: 30px;
+    height: 28px;
     line-height: 30px;
-    padding: 0 10px;
+    padding: 0 5px;
     background-color: #fff;
     font-size: 12px;
     margin-right: 10px;
-    text-align: center;
-    color: #909399;
+    text-align:center;
+    color: #1d1d1d;
     cursor: pointer;
 
     &:last-child {
@@ -177,8 +192,8 @@ const onClose = (name) => {
       transition: all 0.3s;
 
       &:hover {
-        color: #fff;
-        background-color: #fff;
+        // color: #fff;
+        // background-color: #fff;
       }
     }
 
@@ -193,7 +208,7 @@ const onClose = (name) => {
       background-color: #42b983;
 
       span {
-        color: #FFFFFF;
+        color: #1d1d1d;
       }
 
       i {

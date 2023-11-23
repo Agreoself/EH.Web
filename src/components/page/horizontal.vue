@@ -1,17 +1,17 @@
 <template>
-    <pageheader :pageTitle="pageTitle" />
+    <!-- <pageheader :pageTitle="pageTitle" /> -->
     <el-row :gutter="5">
         <template v-for="(page, index) in pageInfoList">
             <el-col :span="page.span">
                 <Button v-if="page.hasButton" :buttonInfo="page.buttonInfo" />
                 <template v-if="page.hasTable">
-                    <el-card shadow="always" style="height: 100%;">
-                        <Table :tableInfo="page.tableInfo" @CallTable="OnTable(index, $event)" ref="table" />
+                    <el-card  shadow="always" >
+                        <Table v-if="page.hasTable" :tableInfo="page.tableInfo" @CallTable="OnTable(index, $event)" ref="table" />
                     </el-card>
                 </template>
                 <template v-if="page.hasForm">
-                    <el-card shadow="always" style="margin-top: 34px; height: 100%;">
-                        <Form :formInfo="page.formInfo" :operateType="operateType" @CallTable="OnForm(index, $event)" />
+                    <el-card shadow="always">
+                        <Form :formInfo="page.formInfo" :operateType="operateType"  />
                     </el-card>
                 </template>
 
@@ -47,7 +47,12 @@ const OnTable = (index, data) => {
 }
 
 const OnForm = (index, data) => {
-
+    let callbackdata = {
+        components: 'form',
+        module: 't' + index,
+        componentsData: data
+    };
+    emits('CallPage', callbackdata);
 }
 
 const tableExpose = (module, method, data) => {

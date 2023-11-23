@@ -1,6 +1,7 @@
 import { deepTree, revisePath } from "@/utils";
 // import { userMenu } from "@/api/user";
-import { GetMenuListByUser } from "@/api/menu";
+import { Menu } from "@/api/system/menu";
+const menu=new Menu();
 import storage from "@/utils/storage";
 
 const state = () => ({
@@ -38,8 +39,10 @@ const mutations = {
 const actions = {
   async generateRoutes({ commit }) {
     return new Promise((resolve, reject) => {
-      GetMenuListByUser().then((res) => {
-        console.log(res.result)
+      let roleId=storage.get("currentRole");
+      let json={roleId:roleId} 
+      menu.GetMenuByRole(json).then((res) => {
+        // console.log(res.result)
         const menus = []
         for (let i = 0; i < res.result.length; i++) {
           evalDepartment(res.result[i], menus)
@@ -53,12 +56,14 @@ const actions = {
           }
           return menus;
         }
+        // console.log(menus)
         const routes = menus
-          .filter((e) => e.type !== 2)
+          // .filter((e) => e.menuType !== 1)
           .map((e) => {
             return {
               id: e.id,
-              parentId: e.parentId==null?'':e.parentId,
+              sort:e.sort,
+              parentId: e.parentID==null?'':e.parentID,
               // path: revisePath(e.path),
               // viewPath: e.viewPath,
               path: revisePath(e.routePath),

@@ -1,18 +1,18 @@
 <template>
-    <pageheader :pageTitle="pageTitle"/>
+    <!-- <pageheader :pageTitle="pageTitle"/> -->
 
     <template v-if="hasButton">
         <Button :buttonInfo="buttonInfo" />
     </template>
-  
+
     <template v-if="hasTable">
         <el-card shadow="always" >
-        <Table  :tableInfo="tableInfo" @CallTable="OnTable" />
+            <Table  :tableInfo="tableInfo" @CallTable="OnTable" />
         </el-card>
     </template>
-
+    <!-- :style="{ height: hasButton ? (height-34-10-92) + 'px' : (height-10-92) + 'px' }" -->
     <template v-if="hasForm">
-        <Form :formInfo="formInfo"/>
+        <Form :formInfo="formInfo" />
     </template>
 </template>
 
@@ -21,37 +21,39 @@ import pageheader from '@/components/layout/pageheader.vue';
 import Table from '@/components/table/index.vue'
 import Button from '@/components/button/index.vue'
 import Form from '@/components/form/index.vue'
-const props=defineProps(['pageInfo']);
-const emits=defineEmits(['CallPage']);
+const props = defineProps(['pageInfo']);
+const emits = defineEmits(['CallPage']);
 
-const pageRenderInfo=props.pageInfo;
+const pageRenderInfo = props.pageInfo;
 
 
-const pageTitle=pageRenderInfo.pageTitle;
-const hasButton=pageRenderInfo.hasButton;
-const hasTable=pageRenderInfo.hasTable; 
-const hasForm=pageRenderInfo.hasForm;
+const pageTitle = pageRenderInfo.pageTitle;
+const hasButton = pageRenderInfo.hasButton;
+const hasTable = pageRenderInfo.hasTable;
+const hasForm = pageRenderInfo.hasForm;
 
-const buttonInfo=pageRenderInfo.buttonInfo;
-const tableInfo=pageRenderInfo.tableInfo;
-const formInfo=pageRenderInfo.formInfo;
- 
- 
-onMounted(()=>{
-    // console.log(pageRenderInfo)
+const buttonInfo = pageRenderInfo.buttonInfo;
+const tableInfo = pageRenderInfo.tableInfo;
+const formInfo = pageRenderInfo.formInfo;
+
+let mainHeight = 580;//document.getElementById("mainbody").offsetHeight;
+let height=document.body.offsetHeight;
+
+onMounted(() => {
+
 })
 
-const OnTable = (data) => { 
-  tableInfo.value = data.table;
+const OnTable = (data) => {
+    tableInfo.value = data.table;
 
-  let callbackdata={
-    components:'table',
-    componentsData:data
-  };
-  emits('CallPage',callbackdata); 
+    let callbackdata = {
+        components: 'table',
+        componentsData: data
+    };
+    emits('CallPage', callbackdata);
 }
 
- 
+
 
 </script>
 

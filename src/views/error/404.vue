@@ -9,7 +9,7 @@
           Please check that the URL you entered is correct, or click the button
           below to return to the homepage.
         </div>
-        <el-button type="primary" round @click="goHome">Back to hemo</el-button>
+        <el-button type="primary" round @click="goHome">Back to home</el-button>
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@ export default {
   setup() {
     let router = useRouter();
     const goHome = () => {
-      router.replace({ path: "/" });
+      router.replace({ path: "/homepage" });
     };
     return {
       goHome,

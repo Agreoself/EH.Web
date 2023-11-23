@@ -3,18 +3,20 @@ export const deepTree = (list) => {
   let map = {};
 
   list.forEach((e) => (map[e.id] = e));
-
+ 
   list.forEach((e) => {
     let parent = map[e.parentId];
-
+    // console.log(1,map)
     if (parent) {
       (parent.children || (parent.children = [])).push(e);
     } else {
-      if (!e.parentId) {
+      if (e.parentId=="00000000-0000-0000-0000-000000000000") {
         newList.push(e);
       }
     }
   });
+
+  // console.log(2,newList)
 
   const fn = (list) => {
     list.map((e) => {

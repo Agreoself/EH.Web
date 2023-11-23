@@ -25,6 +25,11 @@
       <el-form-item label="部门" :label-width="formLabelWidth">
         <el-input v-model="form.department" autocomplete="off"></el-input>
       </el-form-item>
+
+      <el-form-item label="上级" :label-width="formLabelWidth">
+        <el-input v-model="form.report" autocomplete="off"></el-input>
+      </el-form-item>
+
       <el-form-item label="是否管理员" :label-width="formLabelWidth">
  
         <el-radio-group v-model="form.isAdmin" class="ml-4">
@@ -66,7 +71,8 @@
 </template>
 
 <script setup>
-import { ModifyUser } from "@/api/user";
+import { User } from "@/api/system/user";
+const user=new User();
 import { message } from "@/utils/message";
 
 const props=defineProps(["operateType","formValue"]);
@@ -141,7 +147,7 @@ const update = () => {
   // form.value.parentID="94d26bc1-c2ca-425a-9c30-f3807f0ca523";
   let postJson=JSON.stringify(form.value)
   console.log(postJson)
-  ModifyUser(postJson).then(res=>{
+  user.update(postJson).then(res=>{
     if(res.code=="000"){
       message.success("操作成功")
       dialogVisible.value=false;

@@ -1,56 +1,68 @@
 <template>
-  <header>
-    <div class="l-content">
-      <!-- <div class="topbar__collapse" @click="collapseMenu">
-        <el-icon v-if="menuCollapse"><Expand /></el-icon>
-        <el-icon v-else><Fold /></el-icon> 
-    </div>  -->
-      <template v-if="menuCollapse">
+
+  <div>
+    <el-row :gutter="24" style="display: flex; align-items: center;" >
+    <el-col :span="1" style="margin-top:15px" >
+        <template v-if="menuCollapse">
         <el-button plain :icon="Expand" size="small" @click="collapseMenu"></el-button>
       </template>
       <template v-else>
         <el-button plain :icon="Fold" size="small" @click="collapseMenu"></el-button>
       </template>
+    </el-col>
 
-      <BreadCrumb />
-    </div>
-    <div class="r-content">
-      <div style="text-align: center;font-size: large;float: left;padding-right: 20px;padding-top: 12px;">
-        <span>{{ store.state.user.userInfo.userName }}</span>
-      </div>
-      <el-dropdown trigger="click" size="small">
-        <span class="el-dropdown-link">
-          <img src="../../assets/user.png" class="user" />
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="goHome">个人中心</el-dropdown-item>
-            <el-dropdown-item @click.native="logOut">退出</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-    <!-- <Tab /> -->
-  </header>
+      <el-col :span="17" style="margin-top:15px">  
+        <!-- 面包屑 -->
+        <BreadCrumb />
+      </el-col>
+      <!-- 全屏 -->
+   
+      <el-col :span="1"  style="margin-top:15px"> 
+      <!-- 中英文切换 -->
+        <language-bar />
+      </el-col>
+
+      <el-col :span="1" style="margin-top:15px">
+        <el-button title="Refresh"  style="border: none; font-size: 20px" :icon="Refresh" circle plain @click="reload">
+        </el-button>
+      </el-col>
+
+      <el-col :span="4" style="margin-top:15px">
+        <!-- 用户头像 -->
+        <user-bar />
+      </el-col>
+    </el-row>
+  </div>
+
+  
 </template>
 
 <script setup>
-import store from "@/store";
-import { useRouter } from '@/router';
-import { logout } from "@/api/user";
-import { Fold, Expand } from "@element-plus/icons-vue";
+
+import store from "@/store"; 
+import { Fold, Expand,Refresh } from "@element-plus/icons-vue";
 import Tab from '@/layout/header/MulitTab.vue'
 import BreadCrumb from "./BreadCrumb.vue";
-
+import LanguageBar from "./LanguageBar.vue";
+import UserBar from "./UserBar.vue"; 
+import storage from "@/utils/storage";
+import { generateDynamicRoutes, useRouter } from '@/router';
+ 
+const router = useRouter();
 const userImg = ref("@/assets/logo.png");
 const userInfo = store.state.user.userInfo;
 const tabList = store.state.tab.tabList;
-
-const router = useRouter();
+let currentRole = storage.get("currentRole");
+ 
+const reload = ()=>{
+  location.reload()
+  console.log(router)
+}
 
 let menuCollapse = computed(() => {
   return store.getters.menuCollapse;
 });
+
 
 const collapseMenu = () => {
   // menuCollapse.value = !menuCollapse.value;
@@ -61,7 +73,21 @@ const goHome = () => {
   router.push({ path: "/homepage" });
 };
 
+const changeRole =async (roleId) => {
+  store.commit("user/setCurrentRole", roleId);
+  const routes = await store.dispatch("menu/generateRoutes");
+   if (!routes) {
+    ElMessage.error("该账号没有权限");
+  } else {
+    generateDynamicRoutes(routes)
+    // router.push('/homepage');
+  }
+  location.reload();
+  // const routes = store.dispatch("menu/generateRoutes");
+}
+
 const logOut = () => {
+  window.sessionStorage.setItem("isLogin", false);
   store.dispatch("user/logout").then(() => {
     router.push({
       path: "/login",

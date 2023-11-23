@@ -22,10 +22,10 @@ const mutations = {
             e.active = e.value === item.value
         })
 
-        if (item.value === '/') {
+        if (item.value === '/homepage') {
             item.label = '首页'
-            item.name = 'Layout'
-            item.value = '/'
+            item.name = 'homepage'
+            item.value = '/homepage'
             item.keepAlive = false
             item.active = true
         }
@@ -61,17 +61,24 @@ const mutations = {
         state.list = [
             {
                 label: '首页',
-                value: '/',
+                value: '/homepage',
                 keepAlive: true,
                 active: true,
-                name: 'Layout',
+                name: 'homepage',
             },
         ]
         storage.set('process', state.list)
     },
 }
 
-const actions = {}
+const actions = {
+    addProcess({ commit },item) {
+        commit('ADD_PROCESS',item)
+    },
+    resetProcess({commit}){
+        commit('RESET_PROCESS')
+    }
+}
 
 export default {
     namespaced: true,

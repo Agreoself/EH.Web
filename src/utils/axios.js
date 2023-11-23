@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {message} from "@/utils/message"
 
 const service = axios.create({
   timeout: 100000
@@ -7,7 +8,9 @@ const service = axios.create({
 /* 判断生产环境和开发环境 */
 if (process.env.NODE_ENV === 'production') {
   // 生产环境
-  service.defaults.baseURL = 'http://192.168.119.100:8888/api'
+  // service.defaults.baseURL = 'https://xmhr.ehi.ehealth.com/eHealthApi/api'
+  service.defaults.baseURL = 'https://localhost:5757/api'
+
 } else {
   // 开发环境
   service.defaults.baseURL = 'https://localhost:5757/api'
@@ -27,6 +30,7 @@ service.interceptors.request.use(config => {
   }
   return config
 }, err => {
+  message.error('request failed')
   return Promise.reject(err)
 })
 
@@ -78,6 +82,7 @@ service.interceptors.response.use(res => {
   } else {
     err.message = '连接服务器失败!'
   }
+  message.error(err.message)
   return Promise.reject(err)
 })
 

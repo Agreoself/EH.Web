@@ -1,0 +1,15 @@
+export default {
+  "首页":"HomePage",
+  "homepage": "Index",
+  "考勤": "Attendance",
+  "考勤管理": "Attendance Manage",
+  "我的休假": "My Leave",
+  "假期管理": "Leave Manage",
+  "假期设置": "Leave Setting",
+  "休假审批":"Leave Approval",
+  "系统管理": "System Manage",
+  "菜单管理": "Menu Manage",
+  "用户管理": "User Manage",
+  "角色管理": "Role Manage",
+  "字典管理": "Dictionary Manage",
+};

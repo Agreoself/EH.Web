@@ -7,14 +7,18 @@
 </template>
   
 <script setup>
-import { GetRolePageList, DeleteRole } from "@/api/role";
-import { GetUserListInRole } from "@/api/user";
+import storage from "@/utils/storage"
+import { Role } from "@/api/system/role";
+const role = new Role();
+import { User } from "@/api/system/user";
+const user = new User();
+
 import HorizontalPage from '@/components/page/horizontal.vue';
 import SetUser from './SetUser.vue';
 import SetMenu from './SetMenu.vue';
 import RoleOpera from './RoleOpera.vue';
 import { message } from '@/utils/message'
-import { page } from '@/utils/pageinfo' 
+import { page } from '@/utils/pageinfo'
 
 const hzTable = ref();
 
@@ -30,7 +34,8 @@ let setMenuKey = ref(0);
 let setMenuVisible = ref(false);
 
 let idList = ref([]);
-let roleId=ref("");
+let idList2 = ref([]);
+let roleId = ref("");
 
 let tableColumn = [
   { prop: "roleName", label: "角色名称", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
@@ -43,21 +48,21 @@ let tableColumn = [
   , { prop: "modifyDate", label: "更新时间", sort: false, filterValue: '', width: 200, scope: false, type: 'date' }
 ];
 
-let table = toRef(page.tableInfo.createNew());
+let table = toRef(page.tableInfo.createNew(34));
 table.value.tableColumn = tableColumn;
 
 
 let tableColumn1 = [
-  { prop: "userName", label: "用户名称", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
+  { prop: "userName", label: "用户名称", sort: false, filterValue: '', width: 100, scope: false, type: 'string' }
   , { prop: "fullName", label: "全称", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
-  , { prop: "gender", label: "性别", sort: false, filterValue: '', width: 120, scope: true, type: 'int', options: [{ value: 1, label: "男", }, { value: 2, label: "女", },] }
+  , { prop: "gender", label: "性别", sort: false, filterValue: '', width: 80, scope: true, type: 'int', options: storage.get("allDic")["gender"] }
   , { prop: "department", label: "部门", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "email", label: "邮箱", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "jobTitle", label: "职务", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "report", label: "上级", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
 
 ];
-let table1 = toRef(page.tableInfo.createNew());
+let table1 = toRef(page.tableInfo.createNew(34));
 table1.value.tableColumn = tableColumn1;
 table1.value.pageRequest.defaultWhere = "roleId=" + roleId.value;
 
@@ -76,31 +81,34 @@ onMounted(() => {
 
 const GetData = () => {
   let postJson = JSON.stringify(table.value.pageRequest);
-  GetRolePageList(postJson).then(res => {
+  role.getPageList(postJson).then(res => {
     if (res.code == "000") {
       table.value.tableData = res.result;
       table.value.total = res.other;
-      table.value.currentRow = res.result[0]
-      roleId.value=res.result[0].id;
-      GetData2(roleId.value)
+      if (res.result.length > 0) {
+        table.value.currentRow = res.result[0]
+        roleId.value = res.result[0].id;
+        GetData2(roleId.value)
+      }
+
     } else {
       message.error(res.message)
     }
   })
 };
 
-const GetData2=(roleId)=>{
-   table1.value.pageRequest.defaultWhere = "roleId=" + roleId;
-      let userPostJson = JSON.stringify(table1.value.pageRequest);
-      GetUserListInRole(userPostJson).then(res => {
-        if (res.code == "000") {
-          table1.value.tableData = res.result;
-          table1.value.total = res.other;
-          table1.value.currentRow = res.result[0]
-        }else {
+const GetData2 = (roleId) => {
+  table1.value.pageRequest.defaultWhere = "roleId=" + roleId;
+  let userPostJson = JSON.stringify(table1.value.pageRequest);
+  user.GetUserListInRole(userPostJson).then(res => {
+    if (res.code == "000") {
+      table1.value.tableData = res.result;
+      table1.value.total = res.other;
+      table1.value.currentRow = res.result[0]
+    } else {
       message.error(res.message)
     }
-      })
+  })
 }
 
 
@@ -113,23 +121,25 @@ const OnPage = (data) => {
       if (componentsData.needRefresh) {
         GetData()
       }
-      idList.value = componentsData.table.selectRow.map(i => i.id);
-      roleId.value=componentsData.table.currentRow.id;
+      if (componentsData.table.selectRow.length > 0) {
+        idList.value = componentsData.table.selectRow.map(i => i.id);
+      }
+      else { idList.value = [] }
+      componentsData.table.currentRow != undefined ? roleId.value = componentsData.table.currentRow.id : roleId.value = '-11';
+
     }
   }
   if (module == 't1') {
-    // console.log(componentsData)
-    // if (components == 'table') {
-    //   table1.value.pageRequest.defaultWhere = "roleId=" + roleId.value;
-    //   if (componentsData.needRefresh) { 
-    //     GetData2(roleId.value)
-    //   }
-    //   idList.value = componentsData.table.selectRow.map(i => i.id); 
-    // }
+    if (components == 'table') {
+      if (componentsData.needRefresh) {
+        GetData2(roleId.value)
+      }
+      idList2.value = componentsData.table.selectRow.map(i => i.id);
+    }
   }
-} 
+}
 
-watch(roleId,(newVal,oldVal)=>{
+watch(roleId, (newVal, oldVal) => {
   GetData2(newVal)
 })
 
@@ -139,13 +149,13 @@ const onMenuOpera = (data) => {
   }
 }
 
-const onSetUser=(data)=>{
+const onSetUser = (data) => {
   if (data == true) {
     GetData2(roleId.value)
   }
 }
 
-const onSetMenu=(data)=>{
+const onSetMenu = (data) => {
 
 }
 
@@ -163,7 +173,7 @@ const deleteRole = () => {
   else {
     const func = () => {
       let postJson = JSON.stringify(idList.value)
-      DeleteRole(postJson).then(res => {
+      role.delete(postJson).then(res => {
         if (res.code == "000") {
           message.success("删除成功");
           GetData();
@@ -192,14 +202,45 @@ const updateRole = () => {
   }
 }
 
+const deleteUserRole = () => {
+  if (idList2.value.length == 0) {
+    message.warning("请选择要删除的数据")
+  }
+  else {
+    const func = () => {
+      let json = { userIds: idList2.value, roleIds: idList.value }
+      let postJson = JSON.stringify(json);
+      role.deleteUserRole(postJson).then(res => {
+        if (res.code == "000") {
+          message.success("删除成功");
+          GetData2(roleId.value);
+        }
+        else {
+          message.error(res.message);
+        }
+      })
+    }
+    message.confirm('确认删除选中数据？', func)
+  }
+}
+
 const setUser = () => {
   dialogFormVisible.value = true;
   dialogKey.value = Math.random();
 }
 
 const setMenu = () => {
-  setMenuVisible.value = true;
-  setMenuKey.value = Math.random();
+  if (idList.value.length == 0) {
+    message.warning("请选择要分配的角色")
+  }
+  else if (idList.value.length > 1) {
+    message.warning("无法修改多条，请单选~")
+  }
+  else {
+    setMenuVisible.value = true;
+    setMenuKey.value = Math.random();
+  }
+
 }
 
 let buttonInfo = ref([
@@ -210,8 +251,8 @@ let buttonInfo = ref([
   , { size: 'small', type: 'primary', icon: 'Menu', click: setMenu, text: '分配权限' }
 ])
 
-let buttonInfo1 = ref([ 
-  { size: 'small', type: 'primary', icon: 'Minus', click: deleteRole, text: '删除' } 
+let buttonInfo1 = ref([
+  { size: 'small', type: 'primary', icon: 'Minus', click: deleteUserRole, text: '删除' }
 ])
 
 

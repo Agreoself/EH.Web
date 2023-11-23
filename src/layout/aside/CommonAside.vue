@@ -14,25 +14,25 @@
           <el-icon>
             <component :is="menu.icon" />
           </el-icon>
-          <span>{{ menu.menuName }}</span>
+          <span>{{ t(menu.menuName) }}</span>
         </template>
         <template v-for="(childMenu, childIndex) in menu.children">
           <el-menu-item :index="childMenu.routePath" @click="clickMenu(childMenu)">
             <el-icon>
               <component :is="childMenu.icon" />
             </el-icon>
-            {{ childMenu.menuName }}
+            {{ t(childMenu.menuName) }}
           </el-menu-item>
         </template>
       </el-sub-menu>
 
-      <el-menu-item v-else :index="menu.routePath" @click="clickMenu(menu)" :key="menu.routePath">
+      <el-menu-item v-else :index="menu.routePath" @click="clickMenu(menu)">
         <!-- <i :class="`el-icon-${menu.icon}`"></i> -->
 
         <el-icon>
           <component :is="menu.icon" />
         </el-icon>
-        <span>{{ menu.menuName }}</span>
+        <span>{{t( menu.menuName) }}</span>
       </el-menu-item>
     </template>
     <!-- <TreeMenu :menu="GETMENULIST"></TreeMenu> -->
@@ -41,10 +41,16 @@
 
 <script setup>
 import store from "@/store";
-import { GetMenuListByUser } from "@/api/menu";
+import storage from "@/utils/storage";
+import { Menu } from "@/api/system/menu";
+const menu = new Menu();
 // import TreeMenu from "./TreeMenu.vue";
 import { useRouter } from '@/router';
 const router = useRouter();
+import { useI18n } from "vue-i18n";
+const { t, locale } = useI18n();
+
+
 const activeMenu = ref('');
 let menulist = ref([]);
 
@@ -53,7 +59,9 @@ let menulist = ref([]);
 onMounted(async () => {
   //  menulist.value=  await store.dispatch("menu/refreshMenu");
 
-  await GetMenuListByUser().then(data => {
+  let currentRole = storage.get("currentRole");
+  let json = { roleId: currentRole };
+  await menu.GetMenuByRole(json).then(data => {
     // console.log(data);
     menulist.value = data.result;
     // console.log(menulist.value)
@@ -104,6 +112,11 @@ const clickMenu = (item) => {
     text-align: center;
     line-height: 48px;
   }
+}
+
+.el-menu-item.is-active{
+  background-color: #123444 !important;
+  border-radius: 5px;
 }
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {

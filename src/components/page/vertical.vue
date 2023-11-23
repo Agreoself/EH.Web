@@ -1,5 +1,5 @@
 <template>
-    <pageheader :pageTitle="pageTitle" />
+    <!-- <pageheader :pageTitle="pageTitle" /> -->
     <template v-for="(page, index) in pageInfoList">
         <el-row :gutter="5"> 
             <Button v-if="page.hasButton" :buttonInfo="page.buttonInfo" />

@@ -44,7 +44,8 @@
 </template>
 
 <script setup> 
-import { AddRole,UpdateRole } from "@/api/role";
+import { Role} from "@/api/system/role";
+const role=new Role();
 import { message } from "@/utils/message";
 
 const props=defineProps(["operateType","formValue"]);
@@ -64,7 +65,7 @@ const add = () => {
    let postJson=JSON.stringify(form.value)
   // console.log(postJson)
 
-  AddRole(postJson).then(res=>{
+  role.add(postJson).then(res=>{
     if(res.code=="000"){
       message.success("添加成功")
       dialogVisible.value=false;
@@ -77,7 +78,7 @@ const add = () => {
 const update = () => { 
   let postJson=JSON.stringify(form.value)
   console.log(postJson)
-  UpdateRole(postJson).then(res=>{
+  role.update(postJson).then(res=>{
     if(res.code=="000"){
       message.success("操作成功")
       dialogVisible.value=false;

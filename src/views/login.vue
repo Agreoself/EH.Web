@@ -16,7 +16,8 @@
 </template>
 
 <script setup>
-import { login, getUserInfo } from "@/api/user";
+import { User } from "@/api/system/user";
+const user=new User();
 import { ElMessage } from "element-plus";
 import store from "@/store";
 import { generateDynamicRoutes, useRouter } from '@/router';
@@ -37,17 +38,15 @@ function submitLogin(form) {
   if (!form) return;
   form.validate((valid) => {
     if (valid) {
-      login(loginForm)
-        .then((res) => {
+      user.login(loginForm).then((res) => {
           // console.log(res);
-          if (res.code == "000") {
-            let token = res.token;
+          if (res.code == "000") { 
             window.sessionStorage.clear();
             window.sessionStorage.setItem("username", loginForm.username);
             window.sessionStorage.setItem("isLogin", true);
             ElMessage.success(res.message);
 
-            getUserInfo().then(async (res) => {
+            user.getUserInfo().then(async (res) => {
               await store.commit("user/setUserInfo", res.result);
 
               // 权限菜单
@@ -57,10 +56,12 @@ function submitLogin(form) {
                 ElMessage.error("该账号没有权限");
               } else {
                 await generateDynamicRoutes(routes)
-                router.push('/');
+                router.push('/homepage');
               }
 
-              router.push('/');
+              // router.push('/homepage');
+              await store.dispatch("enums/setAllDic");
+
               // state.loading = false;
               // router.push({ path: "/homepage" });
             });

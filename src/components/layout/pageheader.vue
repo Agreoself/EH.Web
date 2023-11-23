@@ -21,13 +21,13 @@ const goBack = () => {
   /*display: flex;*/
   /*!*垂直对齐*!*/
   /*align-items: center;*/
-  height: 60px;
+  height: 40px;
   background-color: #EAEEED;
 }
 
 .page-header {
   float: left;
-  margin-top: 20px
+  margin-top: 10px
 }
 
 </style>

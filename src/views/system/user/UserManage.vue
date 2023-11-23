@@ -2,11 +2,16 @@
   <NormalPage :pageInfo="pageRenderInfo" @CallPage="OnPage"/>
   <UserOpera v-if="dialogFormVisible" :key="dialogKey" :formValue="form" :operateType="operateType"
    @operateBack="onMenuOpera" />
+
+   <SetRole v-if="setRoleShow" :user-id="idList" :key="setRoleKey" @setRoleBack="onSetRole" />
 </template>
 
 <script setup>
+import storage from "@/utils/storage";
 import UserOpera from './UserOpera.vue' 
-import {  GetUserPageList } from "@/api/user";    
+import SetRole from './SetRole.vue' 
+import {  User } from "@/api/system/user";  
+const user=new User();  
 import { message } from '@/utils/message'  
 import NormalPage from "@/components/page/normal.vue";
 import {page} from '@/utils/pageinfo'
@@ -18,26 +23,36 @@ let operateType = ref('add');
 let dialogKey = ref(0);
 let dialogFormVisible = ref(false); 
 
+let setRoleKey = ref(0);
+let setRoleShow = ref(false); 
+let onSetRole=(data)=>{
+  if (data == true) {
+    GetData()
+  }
+}
+
+
 let tableColumn=[
     { prop: "userName", label: "用户名称", sort: false, filterValue: '', width: 120,scope:false,type:'string' }
     , { prop: "fullName", label: "全称", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
-    , { prop: "gender", label: "性别", sort: false, filterValue: '', width: 120, scope:true,type:'int',options:[{value: 1,label: "男",},{value: 2,label: "女",},]}
+    , { prop: "gender", label: "性别", sort: false, filterValue: '', width: 80, scope:true,type:'int',options:storage.get("allDic")["gender"]}
     , { prop: "department", label: "部门", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "email", label: "邮箱", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "jobTitle", label: "职务", sort: false, filterValue: '', width: 120, scope:false,type:'string'}
     , { prop: "report", label: "上级", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
-    , { prop: "isActive", label: "状态", sort: false, filterValue: '', width: 120, scope:true,type:'int',options:[{value: 'true',label: "启用",},{value: 'false',label: "禁用",},] }
-    , { prop: "isAdmin", label: "是否管理员", sort: false, filterValue: '', width: 120, scope:true,type:'int',options:[{value: 'true',label: "是",},{value: 'false',label: "否",},] }
+    , { prop: "lastReport", label: "最终上级", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
+    , { prop: "isActive", label: "状态", sort: false, filterValue: '', width: 120, scope:true,type:'int',options:storage.get("allDic")["isActive"] }
+    // , { prop: "isAdmin", label: "是否管理员", sort: false, filterValue: '', width: 120, scope:true,type:'int',options:storage.get("allDic")["isAdmin"] }
     , { prop: "startWorkDate", label: "开始工作时间", sort: false, filterValue: '', width: 120, scope:false,type:'date' }
     , { prop: "ehiStratWorkDate", label: "入司时间", sort: false, filterValue: '', width: 120, scope:false,type:'date' }
-    , { prop: "cc", label: "抄送人", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
+    , { prop: "cc", label: "抄送", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "createBy", label: "创建人", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "createDate", label: "创建时间", sort: false, filterValue: '', width: 120,scope:false,type:'date'}
     , { prop: "modifyBy", label: "更改人", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "modifyDate", label: "更新时间", sort: false, filterValue: '', width: 120, scope:false,type:'date' }
   ];
  
-let table=toRef(page.tableInfo.createNew()); 
+let table=toRef(page.tableInfo.createNew(34)); 
 table.value.tableColumn=tableColumn; 
 
 let form = ref({
@@ -60,7 +75,7 @@ onMounted(() => {
 
 const GetData = () => {
   let postJson = JSON.stringify(table.value.pageRequest);
-  GetUserPageList(postJson).then(res => {
+  user.getPageList(postJson).then(res => {
     if (res.code == "000") {
       table.value.tableData = res.result;
       table.value.total = res.other; 
@@ -108,13 +123,28 @@ const UpdateUser = () => {
 }
 
 const GrantRole=()=>{ 
+  if(idList.value.length>1){
+    message.warning("无法同时设置多个用户，请单选~")
+  }
+  else if(idList.value.length==0){
+    message.warning("请选择要设置的用户")
+  }
+  else
+  {
+    setRoleShow.value=true;
+    setRoleKey.value=Math.random();
+  }
+    
+}
+
+const Sync=()=>{ 
     message.info("Coming soon~") 
 }
 
 let buttonInfo=ref([
   {size:'small',type:'primary',icon:'Edit',click:UpdateUser,text:'编辑'}
 ,{size:'small',type:'primary',icon:'Place',click:GrantRole,text:'分配角色'}
-,{size:'small',type:'primary',icon:'Sort',click:GrantRole,text:'同步用户'}]) 
+,{size:'small',type:'primary',icon:'Sort',click:Sync,text:'同步用户'}]) 
 
 let pageRenderInfo=ref({
   pageTitle:'用户管理',

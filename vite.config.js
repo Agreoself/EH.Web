@@ -14,13 +14,13 @@ export default defineConfig({
   },
 
   plugins: [vue({}),
-
   AutoImport({
     imports: ['vue', 'vue-router',
       // `import { message } from '../src/utils/message.js'`,
     ]
   }),
   ],
+  base:'/',
 
   server: {
     port: 8088,

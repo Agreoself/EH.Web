@@ -1,28 +1,34 @@
 import qs from 'qs'
 import service from './axios'
-
+ 
 export default {
-    get: function (url, params) {
-        return service.get(url, {params})
+    get(url, params) {
+        return service.get(url, { params });
     },
     delete: function (url, params) {
         return service.delete(url, {params})
-    },
+    }, 
     postJSON: function (url, params) {
         return service.post(url, params, {
             headers: {'Content-Type': 'application/json;charset=UTF-8'}
         })
-    },
+    }, 
     postForm: function (url, params) {
         return service.post(url, qs.stringify(params), {
             headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'}
         })
     },
-    postQuery: function (url, params) {
-        return service.post(url, params, {
-            headers: {'Content-Type': 'text/plain;charset=utf-8'}
-        })
+    postQuery:(url, params)=> {
+        const queryString = Object.keys(params)
+            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+            .join('&');
+        return service.post(`${url}?${queryString}`);
     },
+    // postQuery: function (url, params) {
+    //     return service.post(url, params, {
+    //         headers: {'Content-Type': 'text/plain;charset=utf-8'}
+    //     })
+    // },
     putJSON: function (url, params) {
         return service.put(url, params, {
             headers: {'Content-Type': 'application/json;charset=UTF-8'}

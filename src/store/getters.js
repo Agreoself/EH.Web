@@ -2,8 +2,8 @@
 export default {
     // // 用户token
     // token: (state) => state.user.token,
-    // // 语言
-    // language: (state) => state.app.language,
+    // 语言
+    language: (state) => state.app.language,
     // // 用户信息
     // userInfo: (state) => state.user.userInfo,
     // 菜单列表
@@ -14,4 +14,5 @@ export default {
     menuCollapse: (state) => state.menu.collapse,
     // 窗口列表
     processList: (state) => state.process.list,
+    
 }

@@ -38,7 +38,7 @@ const info = (info, time = null) => {
 }
  
 const confirm = (msg, func) => {
-    ElMessageBox.confirm(msg)
+    ElMessageBox.confirm(msg,{type:'warning'})
         .then(() => {
             func();
         })

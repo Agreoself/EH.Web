@@ -3,16 +3,53 @@ const buttonInfo = [];
 const formInfo = {
     createNew: function () {
         let formInfo={};
-        formInfo.rules=[];
-        formInfo.labelWidth="90px";
+        formInfo.layout=[];
+        formInfo.gutter= 10; // 表单项之间的间距
+        formInfo.labelWidth="110px";
+        formInfo.labelPosition= 'right';// 表单标签位置，可选值：'top'、'left'、'right'
+        formInfo.rules={};
         formInfo.formData={};
         formInfo.hasButton=false;
-        formInfo.buttonInfo=[];
-        formInfo.labelPosition= 'right';// 表单标签位置，可选值：'top'、'left'、'right'
-        formInfo.gutter= 20; // 表单项之间的间距
+        formInfo.buttonInfo=[]; 
+    
         formInfo.fields=[];
         return formInfo;
-    } 
+    },
+    createFormLayout:function(fields){
+        let layout=[];
+        fields.forEach(field => {
+            let rowIndex = field.row - 1;
+
+            if (!layout[rowIndex]) {
+              layout[rowIndex] = [];
+            }
+          
+            layout[rowIndex].push(field);
+          
+        });
+
+        return layout;
+    },
+
+    createFormRule:function(fields){
+        let rules={};
+        fields.forEach(field => {
+            if (field.require) {
+                if (!rules[field.prop]) {
+                  rules[field.prop] = [];
+                }
+                rules[field.prop].push({ required: true, message: `${field.label}不能为空`, trigger: 'blur' });
+              }
+            
+              if (field.max) {
+                if (!rules[field.prop]) {
+                  rules[field.prop] = [];
+                }
+                rules[field.prop].push({ max: field.max, message: `${field.label}不能超过${field.max}`, trigger: 'blur' });
+              }
+        });
+        return rules;
+    }
     
  // #region
     // fields: [
@@ -122,10 +159,11 @@ const formInfo = {
 // #endregion
   };
 
-const tableInfo = { 
-    createNew: function () {
+const tableInfo = {  
+    createNew: function (other=0) {
         let tableInfo={};
-        tableInfo.maxHeight = 470;
+        tableInfo.height=document.body.offsetHeight-(92+12+20+24+20)-other
+        tableInfo.maxHeight =490;
         tableInfo.size = 'default';
         tableInfo.tableLayout = 'auto';
         tableInfo.tableColumn = [];
@@ -140,7 +178,7 @@ const tableInfo = {
             order: 'createDate',
             defaultWhere:"",
         };
-        tableInfo.pageSizes = [10, 30, 50, 100];
+        tableInfo.pageSizes = [10, 50, 100,500];
         tableInfo.pagerCount = 5;
         tableInfo.pagerSmall = true;
         tableInfo.layout = "total, sizes, prev, pager, next, jumper"
