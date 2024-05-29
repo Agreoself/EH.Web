@@ -1,5 +1,5 @@
 <template>
-  <HorizontalPage ref="hzTable" :pageInfo="pageInfo" @CallPage="OnPage" />
+  <HorizontalPage ref="hzPage" :pageInfo="pageInfo" @CallPage="OnPage" />
 </template>
   
 <script setup>
@@ -12,7 +12,7 @@ import HorizontalPage from '@/components/page/horizontal.vue';
 import { message } from '@/utils/message'
 import { page } from '@/utils/pageinfo'
 
-const hzTable = ref();
+const hzPage = ref();
 
 let operateType = ref('add');
 let operateKey = ref(0);
@@ -27,8 +27,8 @@ let tableColumn = [
   , { prop: "fullName", label: "全称", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "gender", label: "性别", sort: false, filterValue: '', width: 80, scope: true, type: 'int', }
   , { prop: "department", label: "部门", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
-  , { prop: "startWorkDate", label: "开始工作时间", sort: false, filterValue: '', width: 120, scope:false,type:'date' }
-    , { prop: "ehiStratWorkDate", label: "入司时间", sort: false, filterValue: '', width: 120, scope:false,type:'date' }
+  , { prop: "startWorkDate", label: "开始工作时间", sort: false, filterValue: '', width: 150, scope:false,type:'date' }
+    , { prop: "ehiStratWorkDate", label: "入司时间", sort: false, filterValue: '', width: 150, scope:false,type:'date' }
   , { prop: "jobTitle", label: "职务", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "report", label: "上级", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "lastReport", label: "最终上级", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
@@ -42,7 +42,7 @@ let tableColumn1 = [
   , { prop: "available", label: "可用", sort: false, filterValue: '', width: 90, scope: false, type: 'string', }
   , { prop: "used", label: "已用", sort: false, filterValue: '', width: 90, scope: false, type: 'string' }
   , { prop: "locked", label: "待批", sort: false, filterValue: '', width: 90, scope: false, type: 'string' }
-  , { prop: "overdue", label: "延期", sort: false, filterValue: '', width: 90, scope: false, type: 'string' }
+  , { prop: "overdue", label: "延期", sort: false, filterValue: '', width:110, scope: false, type: 'string' }
   , { prop: "remark", label: "备注", sort: false, filterValue: '', width: 90, scope: false, type: 'string' }
 ];
 
@@ -57,9 +57,11 @@ onMounted(() => {
 
 const GetData = () => {
   //  table1.value.pageRequest.defaultWhere = "roleId=" + roleId;
+  hzPage.value.Expose(0,"openLoading");
   let userPostJson = JSON.stringify(table.value.pageRequest);
   user.getPageList(userPostJson).then(res => {
     if (res.code == "000") {
+      hzPage.value.Expose(0,"closeLoading");
       table.value.tableData = res.result;
       table.value.total = res.other;
       table.value.currentRow = res.result[0]
@@ -70,10 +72,13 @@ const GetData = () => {
 }
 
 const GetData2 = (userId) => {
+  hzPage.value.Expose(1,"openLoading");
   table1.value.pageRequest.defaultWhere = "userId=" + userId;
+  table1.value.pageRequest.where = "year=" + new Date().getFullYear();
   let postJson = JSON.stringify(table1.value.pageRequest);
   leaveManage.getPageList(postJson).then(res => {
     if (res.code == "000") {
+      hzPage.value.Expose(1,"closeLoading");
       table1.value.tableData = res.result;
       table1.value.total = res.other;
       table1.value.currentRow = res.result[0]
@@ -117,15 +122,27 @@ watch(userId, (newVal, oldVal) => {
 let update = () => { }
 
 let calcuteAnnualAndSick=()=>{
- 
-  let json={userId:table.value.selectRow[0].userName}
-  console.log(json);
+  // let json={userId:table.value.selectRow[0].userName}
+  let json=table.value.selectRow.map(i=>i.userName);
   leaveManage.calcuteAnnualAndSick(json).then(res=>{
     if(res.code=="000"){
       message.success(res.message)
       GetData2(table.value.selectRow[0].userName)
     }
   })
+}
+
+let calcutePersonal=()=>{
+ 
+ let json={userIds:table.value.selectRow.map(i=>i.userName)}
+ let postJson=JSON.stringify(table.value.selectRow.map(i=>i.userName));
+ console.log(postJson)
+ leaveManage.calcutePersonal(postJson).then(res=>{
+   if(res.code=="000"){
+     message.success(res.message)
+     GetData2(table.value.selectRow[0].userName)
+   }
+ })
 }
 
 let buttonInfo1 = ref([
@@ -135,8 +152,8 @@ let buttonInfo1 = ref([
 let buttonInfo = ref([
     { size: 'small', type: 'primary', icon: 'SetUp', click:calcuteAnnualAndSick, text: '计算年假及病假' }
   , { size: 'small', type: 'primary', icon: 'Minus', click: () => { message.success('Data is being confirmed') }, text: '清空年假' }
-  , { size: 'small', type: 'primary', icon: 'Timer', click: () => { message.success('Data is being confirmed')}, text: '延期年假' } 
-  ,
+  // , { size: 'small', type: 'primary', icon: 'Timer', click: () => { message.success('Data is being confirmed')}, text: '延期年假' } 
+  ,{ size: 'small', type: 'primary', icon: 'SetUp', click: calcutePersonal, text: '事假计算' } 
 ])
 
 const gerenalFormInfo = () => {

@@ -1,5 +1,5 @@
 <template>
-    <HorizontalPage ref="hzTable" :pageInfo="pageInfo" @CallPage="OnPage" />
+    <HorizontalPage ref="hzPage" :pageInfo="pageInfo" @CallPage="OnPage" />
     <EnumOpera v-if="operateFormVisible" :key="operateKey" :formValue="form" :operateType="operateType"
         @operateBack="onEnumOpera" />
     <EnumItemOpera v-if="operate2FormVisible" :key="operate2Key" :enumTypeId="enumTypeId" :formValue="form2" :operateType="operate2Type"
@@ -18,7 +18,7 @@ import EnumItemOpera from './EnumItemOpera.vue';
 import { message } from '@/utils/message'
 import { page } from '@/utils/pageinfo'
 
-const hzTable = ref();
+const hzPage = ref();
 
 let operateType = ref('add');
 let operateKey = ref(0);
@@ -72,6 +72,7 @@ const GetData = () => {
     let postJson = JSON.stringify(table.value.pageRequest);
     enums.getPageList(postJson).then(res => {
         if (res.code == "000") {
+            hzPage.value.Expose(0,"closeLoading");
             table.value.tableData = res.result;
             table.value.total = res.other;
             table.value.currentRow = res.result[0];
@@ -90,6 +91,7 @@ const GetData2 = (enumTypeId) => {
     let userPostJson = JSON.stringify(table1.value.pageRequest);
     enumitem.getPageList(userPostJson).then(res => {
         if (res.code == "000") {
+            hzPage.value.Expose(1,"closeLoading");
             table1.value.tableData = res.result;
             table1.value.total = res.other;
             table1.value.currentRow = res.result[0]

@@ -80,6 +80,7 @@ const actions = {
               children: [],
             };
           });
+        debugger
         console.log("routes", routes);
         // 格式化菜单
         const menuGroup = deepTree(routes);

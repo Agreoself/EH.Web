@@ -1,5 +1,7 @@
 import NProgress from 'nprogress';
 import { useStore } from '@/store';
+import storage from "@/utils/storage";
+
 const store=useStore();
 
 NProgress.configure({ showSpinner: false });
@@ -15,63 +17,56 @@ const loginIgnore = {
 }
 
 // 加载路由守卫
-export function loadGuards(router) { 
-    router.beforeEach((to, from, next) => {
-        // console.log(to)
-        // console.log(from)
-        if (!NProgress.isStarted()) {
-            NProgress.start()
-        }
-    
-        const hasToken =JSON.parse(window.sessionStorage.getItem('isLogin'));
-        if (hasToken) {
-            if (to.name == 'login') {
-                next({ path: '/login' })
+export function loadGuards(router) {
+    const store = useStore();
+    router.beforeEach(async (to, from, next) => {
+        // console.log(to) 
+        if (!NProgress.isStarted()) {  NProgress.start(); }
+        const hasToken = JSON.parse(storage.get('isLogin'));
+        if (hasToken) 
+        {
+            //debugger
+            if (to.name == 'Login'||to.path=='/') {
+                store.dispatch("user/logout").then(() => { }); 
+                next({ path: '/login', query: { redirect: '/homepage' } })
                 NProgress.done();
-            } else {
-                //console.log(router.getRoutes());
-              
-                const hasRoute = router.hasRoute(to.name);
-                if (hasRoute) {
-                    const store = useStore();
-
-                    store.dispatch('process/addProcess', {
+            }
+            else {
+                // debugger
+                // const routes=router.getRoutes();
+                // let existRoute= routes.filter(i=>i.path==to.path);
+                const hasRoute = router.hasRoute(to.name);// existRoute.length>0;
+                if (hasRoute) { 
+                    await store.dispatch('process/addProcess', {
                         keepAlive: to.meta.keepAlive,
                         label: to.meta.title,
                         value: to.fullPath,
                         name: to.name
                     })
-                    next()
+                    next();
 
                 } else {
                     // console.log(to.fullPath);
                     // console.log(to);
-                    store.dispatch('process/resetProcess')
-                    next({path:'homepage'})
-                    // next({ ...to, replace: true })
-                    // next({
-                    //     path: to.fullPath,
-                    //     query: { redirect: to.fullPath }
-                    // })
+                    await store.dispatch('process/resetProcess')
+                    next({ path: 'homepage' })
                 }
             }
         }
-        else {
-            // window.sessionStorage.setItem("isLogin", false);
-            // window.sessionStorage.setItem("userName", null);
-            store.dispatch("user/logout").then(() => {
-                
-              });
-              if (!loginIgnore.includes(to)) {
+        else 
+        {
+            // store.dispatch("user/logout").then(() => { }); 
+            if (!loginIgnore.includes(to)) {
+                // console.log(to)
                 next({
                     path: "/login",
+                    query: { redirect: to.fullPath == '/' ? "/homepage" : to.fullPath },
                     replace: true
                 });
                 NProgress.done();
             } else {
                 next()
-            }
-            
+            } 
         }
     })
 

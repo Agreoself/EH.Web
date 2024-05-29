@@ -9,7 +9,7 @@
           Please check that the URL you entered is correct, or click the button
           below to return to the homepage.
         </div>
-        <el-button type="primary" round @click="goHome">Back to home</el-button>
+        <el-button type="primary" round @click="goHome">Back to homepage</el-button>
       </div>
     </div>
   </div>
@@ -35,8 +35,8 @@ export default {
 .not-found {
   transform: translate(-50%, -50%);
   position: absolute;
-  top: 40%;
-  left: 50%;
+  top: 50%;
+  left: 60%;
 
   .content {
     position: relative;

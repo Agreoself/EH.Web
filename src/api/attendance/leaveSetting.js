@@ -4,11 +4,15 @@ import {BaseCRUD} from '@/api/base';
 const module='atdleavesetting';
 
 class LeaveSetting extends BaseCRUD {
-    constructor() {
-      super(module);
-    }
- 
+  constructor() {
+    super(module);
   }
+
+  getLeaveDetail(params) {
+    return request.postJSON('/' + module + '/getLeaveDetail', params);
+  }
+
+}
 
   
 // export function GetMenuListByUser() {

@@ -8,11 +8,11 @@
   >
     <el-form :model="form" style="padding: 0px 20px" size="default"> 
 
-      <el-form-item label="名称" :label-width="formLabelWidth">
+      <el-form-item :label="t('用户名称')" :label-width="formLabelWidth">
         <el-input v-model="form.userName" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="性别"  :label-width="formLabelWidth">
+      <el-form-item :label="t('性别')"  :label-width="formLabelWidth">
       <el-select v-model="form.gender" class="m-2" placeholder="Select" style="width:100%">
     <el-option
       v-for="item in genders"
@@ -22,23 +22,23 @@
     />
       </el-select>
       </el-form-item> 
-      <el-form-item label="部门" :label-width="formLabelWidth">
+      <el-form-item :label="t('部门')" :label-width="formLabelWidth">
         <el-input v-model="form.department" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="上级" :label-width="formLabelWidth">
+      <el-form-item :label="t('上级')" :label-width="formLabelWidth">
         <el-input v-model="form.report" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="是否管理员" :label-width="formLabelWidth">
- 
-        <el-radio-group v-model="form.isAdmin" class="ml-4">
+      <el-form-item :label="t('最终上级')" :label-width="formLabelWidth">
+        <el-input v-model="form.lastReport" autocomplete="off"></el-input>
+        <!-- <el-radio-group v-model="form.isAdmin" class="ml-4">
       <el-radio :label="true" >管理员</el-radio>
       <el-radio :label="false" >普通用户</el-radio>
-    </el-radio-group>
+    </el-radio-group> -->
 
       </el-form-item>
-      <el-form-item label="开始工作时间" :label-width="formLabelWidth">
+      <el-form-item :label="t('开始工作时间')" :label-width="formLabelWidth">
         <el-date-picker
         v-model="form.startWorkDate"
         type="datetime"
@@ -46,9 +46,13 @@
         style="width: 100%;"
       />
       </el-form-item> 
-      <el-form-item label="抄送" :label-width="formLabelWidth">
+      <el-form-item :label="t('抄送')" :label-width="formLabelWidth">
         <el-input v-model="form.cc" autocomplete="off"></el-input> 
       </el-form-item>
+
+      <el-form-item :label="t('抄送时长')" :label-width="formLabelWidth">
+            <el-input v-model="form.ccHours" autocomplete="off"></el-input>
+          </el-form-item>
     </el-form>
 
     <template #footer>
@@ -71,9 +75,11 @@
 </template>
 
 <script setup>
+const {t}=useI18n();
 import { User } from "@/api/system/user";
 const user=new User();
 import { message } from "@/utils/message";
+import { useI18n } from "vue-i18n";
 
 const props=defineProps(["operateType","formValue"]);
 const emits =defineEmits(["operateBack"]);

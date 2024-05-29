@@ -1,7 +1,7 @@
 <template>
   <el-breadcrumb separator="/">
     <el-breadcrumb-item v-for="(item, index) in navigateList" :key="index" :to="item.path">
-      {{ item.meta.title }}
+      {{t( item.meta.title) }}
     </el-breadcrumb-item>
   </el-breadcrumb>
 
@@ -12,8 +12,10 @@
 </template>
   
 <script setup>
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+const {t}=useI18n();
 
 const store = useStore();
 const { currentRoute } = useRouter();

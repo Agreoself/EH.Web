@@ -5,13 +5,14 @@
             <el-col :span="page.span">
                 <Button v-if="page.hasButton" :buttonInfo="page.buttonInfo" />
                 <template v-if="page.hasTable">
-                    <el-card  shadow="always" >
-                        <Table v-if="page.hasTable" :tableInfo="page.tableInfo" @CallTable="OnTable(index, $event)" ref="table" />
+                    <el-card shadow="always">
+                        <Table v-if="page.hasTable" :tableInfo="page.tableInfo" @CallTable="OnTable(index, $event)"
+                            ref="table" />
                     </el-card>
                 </template>
                 <template v-if="page.hasForm">
                     <el-card shadow="always">
-                        <Form :formInfo="page.formInfo" :operateType="operateType"  />
+                        <Form ref="form" :formInfo="page.formInfo" :operateType="operateType" />
                     </el-card>
                 </template>
 
@@ -28,6 +29,7 @@ import Form from '@/components/form/index.vue'
 const props = defineProps(['pageInfo']);
 const emits = defineEmits(['CallPage']);
 const table = ref();
+const form = ref();
 
 let operateType = ref('add');
 
@@ -55,16 +57,17 @@ const OnForm = (index, data) => {
     emits('CallPage', callbackdata);
 }
 
-const tableExpose = (module, method, data) => {
-    debugger;
-    if (method == 'setDefaultFilter')
-        table.value[module].setDefaultFilter(data);
+const Expose = (module, method, data) => {
+    if (method == 'setfilterLabel')
+        table.value[module].Expose("setfilterLabel",data);
     if (method == 'filterChange')
-        table.value[module].filterChange(data);
+        table.value[module].Expose("filterChange",data);
+    if (method == 'closeLoading')
+        table.value[module].Expose("closeLoading");
 }
 
 defineExpose({
-    tableExpose
+    Expose
 }
 );
 

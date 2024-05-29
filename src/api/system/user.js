@@ -23,9 +23,17 @@ class User extends BaseCRUD{
     setRole(params) {
         return request.postJSON('/sysusers/SetRole',params);
     }
+    
+    changePhoto(params) {
+        return request.postJSON('/sysusers/changePhoto',params);
+    }
 
     GetUserListInRole(params) {
         return request.postJSON('/sysusers/GetUserListInRole',params);
+    }
+
+    getADInfo(params) {
+        return request.get('/aduseroperate/getUserbyusername',params);
     }
 
 }

@@ -9,8 +9,21 @@ class LeaveManage extends BaseCRUD {
     }
   
     calcuteAnnualAndSick(params){
-      return request.postQuery('/'+module+'/calculateannualandsick', params);
+      return request.postJSON('/'+module+'/calculateannualandsick', params);
     }
+
+    calcutePersonal(params){
+      return request.postJSON('/'+module+'/CalculatePersonal', params);
+    }
+
+    getInfo(params){
+      return request.postJSON('/'+module+'/getInfo', params);
+    }
+
+    statistics(params){
+      return request.postJSON('/'+module+'/Statistics', params);
+    }
+    
   }
 
   

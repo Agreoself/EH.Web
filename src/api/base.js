@@ -1,5 +1,9 @@
 import request from "@/utils/request";
 
+const GetEntityById=(module,params)=>{
+    return request.get('/'+module+'/GetEntityById', params);
+}
+
 const GetPageList=(module,params) =>{
     return request.postJSON('/'+module+'/GetPageList', params);
 }
@@ -42,6 +46,9 @@ class BaseCRUD {
     }
     update(params){
         return Update(this.module,params);
+    }
+    getEntityById(params){
+        return GetEntityById(this.module,params)
     }
 }
 

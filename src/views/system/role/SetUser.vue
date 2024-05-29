@@ -6,7 +6,7 @@
           </el-checkbox>
         </el-checkbox-group> -->
       
-          <UserTable  :tableInfo="table" @CallTable="OnTable"/>
+          <UserTable ref="utable"  :tableInfo="table" @CallTable="OnTable"/>
       
         <template #footer>
           <el-button @click="cancel" size="default">Cancel</el-button>
@@ -22,7 +22,7 @@ import {User} from '@/api/system/user'
 const user=new User();
 import { message } from '@/utils/message'
 import { page } from '@/utils/pageinfo'
-
+const utable=ref();
 const dialogTitle=ref('设置用户');
 const dialogVisible=ref(true);
 let props=defineProps(['roleList']);
@@ -77,6 +77,7 @@ const GetData=()=>{
   let postJson = JSON.stringify(table.value.pageRequest);
   user.getPageList(postJson).then(res => {
     if (res.code == "000") {
+      utable.value.Expose("closeLoading");
       table.value.tableData = res.result;
       table.value.total = res.other; 
     } else {

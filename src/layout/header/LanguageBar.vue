@@ -26,9 +26,12 @@ const getCurrentLang = computed(() => {
     return i18n.locale.value
 })
 
+const reload = inject("reload");
+
 const toLang = (lang) => {
     i18n.locale.value = lang
     localStorage.setItem('lang', lang)
+    reload();
 }
 
 </script>

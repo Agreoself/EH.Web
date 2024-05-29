@@ -8,6 +8,21 @@ class LeaveForm extends BaseCRUD {
       super(module);
     }
 
+    getPageListWithState(params){
+      return request.postJSON('/'+module+'/getPageListWithState', params);
+    }
+
+    queryGetpagelist(params){
+      return request.postJSON('/'+module+'/queryGetpagelist', params);
+    }
+
+    getHomePageBodyData(params){
+      return request.get('/'+module+'/getHomePageBodyData', params);
+    }
+    
+    getHomePageData(params){
+      return request.get('/'+module+'/getHomePageData', params);
+    }
     getWatiAuditForm(params){
       return request.postJSON('/'+module+'/getWaitAuditForm', params);
     }
@@ -23,6 +38,18 @@ class LeaveForm extends BaseCRUD {
 
     save(params){
       return request.postJSON('/'+module+'/save', params);
+    }
+
+    getStatic(params){
+      return request.postJSON('/'+module+'/getStatic', params);
+    }
+
+    cancel(params){
+      return request.postJSON('/'+module+'/cancel', params);
+    }
+
+    treate(params){
+      return request.postJSON('/'+module+'/treate', params);
     }
   }
 

@@ -10,14 +10,20 @@
       <!--header部分-->
       <el-header>
         <!--header部分控件-->
-        <common-header />
+        <common-header v-if="isRouterAlive" />
       </el-header>
-      <Tab style="margin-left: 10px;"/>
+      <Tab style="margin-left: 10px;" />
       <el-main id="mainbody">
-       
+
         <div>
-          <!--左侧栏 和 header部分对于整个后台部分都是不变的，唯一变的就是上面3的部分，这里就通过router-view来展示所需控件-->
-          <router-view />
+          <router-view v-slot="{ Component }">
+            <keep-alive v-if="isRouterAlive">
+              <component :is="Component" :key="route.name" v-if="route.meta.keepAlive" />
+            </keep-alive>
+            <component :is="Component" :key="route.name" v-if="!route.meta.keepAlive" />
+          </router-view>
+
+          <!-- <router-view v-if="isRouterAlive" /> -->
         </div>
       </el-main>
     </el-container>
@@ -28,6 +34,21 @@
 import CommonAside from "./aside/CommonAside.vue";
 import CommonHeader from "./header/CommonHeader.vue";
 import Tab from "./header/MulitTab.vue";
+
+const router = useRouter();
+const route = useRoute();
+
+const isRouterAlive = ref(true);
+const reload = () => {
+  isRouterAlive.value = false;
+  nextTick(() => {
+    isRouterAlive.value = true;
+  });
+};
+provide("reload", reload);
+
+ 
+
 </script>
 
 <style lang="scss" scoped>

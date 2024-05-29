@@ -1,5 +1,5 @@
 <template>
-  <NormalPage :pageInfo="pageRenderInfo" @CallPage="OnPage" />
+  <NormalPage ref="npage" :pageInfo="pageRenderInfo" @CallPage="OnPage" />
 
   <MenuOpera v-if="dialogFormVisible" :key="dialogKey" :operateType="operateType" :formValue="form"
     @operateBack="onMenuOpera" :parent-menu-list="parentMenuList" />
@@ -13,7 +13,7 @@ import NormalPage from "@/components/page/normal.vue";
 import MenuOpera from './MenuOpera.vue'
 import { message } from '@/utils/message'
 import { page } from '@/utils/pageinfo'
-
+const npage=ref()
 let idList = ref([]);
 
 let parentMenuList = ref([]);
@@ -29,12 +29,12 @@ let form = ref({});
 
 let tableColumn = [
   { prop: "menuName", label: "菜单名称", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
-  , { prop: "menuType", label: "菜单类型", sort: false, filterValue: '', width: 120, scope: true, type: 'int', options:storage.get("allDic")["menuType"] }
+  , { prop: "menuType", label: "菜单类型", sort: false, filterValue: '', width: 100, scope: true, type: 'int', options:storage.get("allDic")["menuType"] }
   , { prop: "parentID", label: "父菜单ID", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "routeName", label: "路由名称", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "routePath", label: "路由路径", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "component", label: "组件路径", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
-  , { prop: "sort", label: "排序", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
+  , { prop: "sort", label: "排序", sort: false, filterValue: '', width: 100, scope: false, type: 'string' }
   , { prop: "icon", label: "图标", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "createBy", label: "创建人", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "createDate", label: "创建时间", sort: false, filterValue: '', width: 120, scope: false, type: 'date' }
@@ -53,6 +53,7 @@ const GetData = () => {
   let postJson = JSON.stringify(table.value.pageRequest);
   menu.getPageList(postJson).then(res => {
     if (res.code == "000") {
+      npage.value.Expose("table","closeLoading")
       table.value.tableData = res.result;
       table.value.total = res.other;
       // parentMenuList.value = res.result.filter(i => i.menuType == 0);

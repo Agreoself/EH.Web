@@ -15,14 +15,15 @@ export default defineConfig({
 
   plugins: [vue({}),
   AutoImport({
-    imports: ['vue', 'vue-router',
+    imports: ['vue', 'vue-router', 'vue-i18n'
       // `import { message } from '../src/utils/message.js'`,
     ]
   }),
   ],
-  base:'/',
+  base: './',
 
   server: {
+    host:'0.0.0.0',
     port: 8088,
     open: true,
     https: false,

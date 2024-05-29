@@ -1,22 +1,36 @@
 import { createI18n } from 'vue-i18n'
 import storage from '@/utils/storage'
 
-import enLocale from 'element-plus/lib/locale/lang/en'
-import zhLocale from 'element-plus/lib/locale/lang/zh-cn'
+// import enLocale from 'element-plus/lib/locale/lang/en'
+// import zhLocale from 'element-plus/lib/locale/lang/zh-cn'
+
+import localeEN from 'element-plus/es/locale/lang/en'
+import localeZH from 'element-plus/es/locale/lang/zh-cn'
 
 import en from './locales/en'
 import zh from './locales/zh-cn'
 
 const messages = {
-    [enLocale.name]:{
-        el: enLocale.el,
+    [localeEN.name]:{
+        el: localeEN.el,
         ...en
     },
-    [zhLocale.name]:{
-        el: zhLocale.el,
+    [localeZH.name]:{
+        el: localeZH.el,
         ...zh
     }
 }
+
+// const messages = {
+//     [enLocale.name]:{
+//         el: enLocale.el,
+//         ...en
+//     },
+//     [zhLocale.name]:{
+//         el: zhLocale.el,
+//         ...zh
+//     }
+// }
 
 export const getLocale = () => {
  
@@ -44,7 +58,7 @@ const i18n = createI18n({
 })
 
 export function loadI18n(app) {
-     console.log(messages)
+    //  console.log(messages)
     app.use(i18n);
 }
 

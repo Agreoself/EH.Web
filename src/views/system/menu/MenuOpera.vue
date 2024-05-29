@@ -160,7 +160,7 @@ let fields = [
   prop: 'sort',
   placeholder: '请输入排序',
   defaultValue: 1,
-  min: 1,
+  min: 0,
   max: 10,
   operateType: ['add','update']
 },

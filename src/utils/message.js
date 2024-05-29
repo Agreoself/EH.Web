@@ -47,8 +47,24 @@ const confirm = (msg, func) => {
         })
 }
 
+const alert = (msg,title) => {
+    ElMessageBox.alert(msg, title, {
+      // if you want to disable its autofocus
+      // autofocus: false,
+      confirmButtonText: 'OK',
+      center:true,
+      dangerouslyUseHTMLString: true
+    //   callback: (action) => {
+    //     ElMessage({
+    //       type: 'info',
+    //       message: `action: ${action}`,
+    //     })
+    //   },
+    })
+  }
+
 const message = {
-    success, error, warning, info, confirm
+    success, error, warning, info, confirm,alert
 }
 
 

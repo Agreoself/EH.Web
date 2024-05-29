@@ -1,6 +1,9 @@
 <template> 
-  <NormalPage :pageInfo="pageRenderInfo" @CallPage="OnPage"/>
+  <NormalPage ref="npage" :pageInfo="pageRenderInfo" @CallPage="OnPage"/>
   <UserOpera v-if="dialogFormVisible" :key="dialogKey" :formValue="form" :operateType="operateType"
+   @operateBack="onMenuOpera" />
+
+   <UserFromAD v-if="dialogFormVisible1" :key="dialogKey1" :formValue="form" :operateType="operateType"
    @operateBack="onMenuOpera" />
 
    <SetRole v-if="setRoleShow" :user-id="idList" :key="setRoleKey" @setRoleBack="onSetRole" />
@@ -9,19 +12,23 @@
 <script setup>
 import storage from "@/utils/storage";
 import UserOpera from './UserOpera.vue' 
+import UserFromAD from './UserFromAD.vue' 
 import SetRole from './SetRole.vue' 
 import {  User } from "@/api/system/user";  
 const user=new User();  
 import { message } from '@/utils/message'  
 import NormalPage from "@/components/page/normal.vue";
 import {page} from '@/utils/pageinfo'
- 
+ const npage=ref()
 
 let idList = ref([]); 
 
 let operateType = ref('add');
 let dialogKey = ref(0);
 let dialogFormVisible = ref(false); 
+
+let dialogKey1 = ref(0);
+let dialogFormVisible1 = ref(false); 
 
 let setRoleKey = ref(0);
 let setRoleShow = ref(false); 
@@ -43,8 +50,8 @@ let tableColumn=[
     , { prop: "lastReport", label: "最终上级", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "isActive", label: "状态", sort: false, filterValue: '', width: 120, scope:true,type:'int',options:storage.get("allDic")["isActive"] }
     // , { prop: "isAdmin", label: "是否管理员", sort: false, filterValue: '', width: 120, scope:true,type:'int',options:storage.get("allDic")["isAdmin"] }
-    , { prop: "startWorkDate", label: "开始工作时间", sort: false, filterValue: '', width: 120, scope:false,type:'date' }
-    , { prop: "ehiStratWorkDate", label: "入司时间", sort: false, filterValue: '', width: 120, scope:false,type:'date' }
+    , { prop: "startWorkDate", label: "开始工作时间", sort: false, filterValue: '', width: 130, scope:false,type:'date' }
+    , { prop: "ehiStratWorkDate", label: "入司时间", sort: false, filterValue: '', width: 130, scope:false,type:'date' }
     , { prop: "cc", label: "抄送", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "createBy", label: "创建人", sort: false, filterValue: '', width: 120, scope:false,type:'string' }
     , { prop: "createDate", label: "创建时间", sort: false, filterValue: '', width: 120,scope:false,type:'date'}
@@ -77,6 +84,7 @@ const GetData = () => {
   let postJson = JSON.stringify(table.value.pageRequest);
   user.getPageList(postJson).then(res => {
     if (res.code == "000") {
+      npage.value.Expose("table","closeLoading");
       table.value.tableData = res.result;
       table.value.total = res.other; 
     } else {
@@ -103,6 +111,11 @@ const onMenuOpera = (data) => {
   if (data == true) {
     GetData()
   }
+}
+
+const addUserFormAD=()=>{
+  dialogFormVisible1.value = true;
+  dialogKey1.value = Math.random();
 }
 
 const UpdateUser = () => {
@@ -144,7 +157,9 @@ const Sync=()=>{
 let buttonInfo=ref([
   {size:'small',type:'primary',icon:'Edit',click:UpdateUser,text:'编辑'}
 ,{size:'small',type:'primary',icon:'Place',click:GrantRole,text:'分配角色'}
-,{size:'small',type:'primary',icon:'Sort',click:Sync,text:'同步用户'}]) 
+,{size:'small',type:'primary',icon:'Sort',click:Sync,text:'同步用户'}
+,{size:'small',type:'primary',icon:'Place',click:addUserFormAD,text:'从AD添加用户'}
+]) 
 
 let pageRenderInfo=ref({
   pageTitle:'用户管理',

@@ -1,7 +1,7 @@
 <template>
   <!--collapse 是否水平折叠收起菜单-->
   <el-menu :collapse="isCollapse" :default-active="$route.path" class="el-menu-vertical-demo" background-color="#2f4158"
-    text-color="#fff" active-text-color="#2b9dfc">
+    text-color="#fff" active-text-color="#2b9dfc" :unique-opened="true">
     <!--是否水平折叠收起菜单 会影响这里字段的显示 -->
     <h3 v-show="isCollapse">System</h3>
     <h3 v-show="!isCollapse">Management System</h3>
@@ -46,8 +46,7 @@ import { Menu } from "@/api/system/menu";
 const menu = new Menu();
 // import TreeMenu from "./TreeMenu.vue";
 import { useRouter } from '@/router';
-const router = useRouter();
-import { useI18n } from "vue-i18n";
+const router = useRouter(); 
 const { t, locale } = useI18n();
 
 
@@ -120,7 +119,7 @@ const clickMenu = (item) => {
 }
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 200px;
+  width: 240px;
   min-height: 400px;
 }
 </style>

@@ -5,7 +5,7 @@ export default {
     // 语言
     language: (state) => state.app.language,
     // // 用户信息
-    // userInfo: (state) => state.user.userInfo,
+    userInfo: (state) => state.user.userInfo,
     // 菜单列表
     menuGroup: (state) => toRaw(state.menu.menuGroup),
     // 路由列表

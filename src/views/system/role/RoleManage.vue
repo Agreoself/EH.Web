@@ -1,5 +1,5 @@
 <template>
-  <HorizontalPage ref="hzTable" :pageInfo="pageInfo" @CallPage="OnPage" />
+  <HorizontalPage ref="hzPage" :pageInfo="pageInfo" @CallPage="OnPage" />
   <RoleOpera v-if="operateFormVisible" :key="operateKey" :formValue="form" :operateType="operateType"
     @operateBack="onMenuOpera" />
   <SetUser v-if="dialogFormVisible" :key="dialogKey" :roleList="idList" @operateBack="onSetUser" />
@@ -20,7 +20,7 @@ import RoleOpera from './RoleOpera.vue';
 import { message } from '@/utils/message'
 import { page } from '@/utils/pageinfo'
 
-const hzTable = ref();
+const hzPage = ref();
 
 
 let operateType = ref('add');
@@ -83,6 +83,7 @@ const GetData = () => {
   let postJson = JSON.stringify(table.value.pageRequest);
   role.getPageList(postJson).then(res => {
     if (res.code == "000") {
+      hzPage.value.Expose(0,"closeLoading");
       table.value.tableData = res.result;
       table.value.total = res.other;
       if (res.result.length > 0) {
@@ -102,6 +103,7 @@ const GetData2 = (roleId) => {
   let userPostJson = JSON.stringify(table1.value.pageRequest);
   user.GetUserListInRole(userPostJson).then(res => {
     if (res.code == "000") {
+      hzPage.value.Expose(1,"closeLoading");
       table1.value.tableData = res.result;
       table1.value.total = res.other;
       table1.value.currentRow = res.result[0]

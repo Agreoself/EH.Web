@@ -21,7 +21,7 @@ const actions = {
   async setAllDic({ commit }) { 
       enums.getAllDic().then((res) => {
         if(res.code=="000"){
-          console.log(res.result) 
+          // console.log(res.result) 
           commit("SET_ALL_DIC", res.result);
         }
     });

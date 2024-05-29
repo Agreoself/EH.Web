@@ -3,7 +3,7 @@
     <el-scrollbar>
       <div v-for="(item, index) in processList" :key="index" :class="{ active: item.active }" :data-index="index"
         class="block" @mousedown="(e) => {onTap(e, item);}">
-        <span>{{ item.label }}</span>
+        <span>{{ t(item.label) }}</span>
         <el-icon v-if="index > 0" :class="{ active: index > 0 }" class="el-icon-close" @mousedown.stop="onDel(index)">
           <Close />
         </el-icon>
@@ -29,8 +29,10 @@
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import {Close,Place} from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n';
 const store = useStore();
 const router = useRouter();
+const {t} =useI18n();
 
 const container = ref(null);
 let state = reactive({

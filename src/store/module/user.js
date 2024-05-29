@@ -27,10 +27,15 @@ export default {
         CLEAR_USER(state) {
             state.userInfo = {};
             storage.remove("userInfo");
-          },
+        },
+        SignOut(state) {
+            storage.set("isLogin",false);
+            storage.remove("username");
+        },
     },
     actions: {
         logout({ commit }) {
+            commit("SignOut");
             commit("CLEAR_USER"); 
             commit("menu/CLEAR_MENU_GROUP", null, { root: true });
             commit("menu/CLEAR_VIEW_ROUTES", null, { root: true });

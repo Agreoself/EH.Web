@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory,createWebHashHistory } from 'vue-router';
 import routes from "./module/pages";
 import views from './module/views'; 
+import storage from "@/utils/storage";
   
 
 // // 修改掉 VueRouter原型上的push方法, 把异常抓住, 啥也不做
@@ -17,7 +18,7 @@ export const router = createRouter({
   // history: createWebHistory(process.env.BASE_URL),
   history: createWebHashHistory(),
   routes: routes,
-  strict: true,
+  //strict: false,
 })
 
 // 挂载路由
@@ -32,11 +33,14 @@ export function useRouter() {
 
 // 加载路由
 export async function loadRoutes({ store }) {
+  //debugger
   // console.log(store.state)
-  let viewRoutes = toRaw(store.state.menu.viewRoutes);
+  //let viewRoutes = toRaw(store.state.menu.viewRoutes);
+  let viewRoutes =  storage.get("viewRoutes")||[];
   // console.log(viewRoutes)
   if (!viewRoutes) {
     viewRoutes = await store.dispatch("menu/generateRoutes");
+
     generateDynamicRoutes(viewRoutes)
   } else {
     generateDynamicRoutes(viewRoutes)
@@ -59,21 +63,42 @@ export function generateDynamicRoutes(list) {
   })
 
   views.children = views.children.concat(list);
-  console.log(views)
+
+  let noneRoute={
+    children:[],
+    component: () => import('@/views/error/404.vue'),
+    id:"",
+    meta: {
+      icon:"Error",
+      keepAlive:true,
+      show:true,
+      title: 'Not Found',
+      type:1,
+    },
+    name: 'none', 
+    parentId:"",
+    path: "/:pathMatch(.*)*",
+    sort:0,
+    viewPath:"views/error/404.vue" 
+  }
+  views.children.push(noneRoute);
+
+  // console.log(views)
   router.addRoute(views);
   // console.log(router)
   // 在动态路由添加后，在将404添加进入，解决刷新是找不到路由跳转404
   if(!router.hasRoute('none')){
+  
     router.addRoute( 
     {
         // path: '/:pathMatch(.*)',
-        path: '/:catchAll(.*)',
+        path: "/:pathMatch(.*)*",
         name: 'none',
         component: () => import('@/views/error/404.vue'),
         meta: {
             title: 'Not Found',
         },
-        redirect: '/404'
+        //redirect: '/404'
     })
   }
   // console.log(router.getRoutes())

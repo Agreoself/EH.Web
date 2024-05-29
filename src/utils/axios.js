@@ -8,26 +8,29 @@ const service = axios.create({
 /* 判断生产环境和开发环境 */
 if (process.env.NODE_ENV === 'production') {
   // 生产环境
-  // service.defaults.baseURL = 'https://xmhr.ehi.ehealth.com/eHealthApi/api'
-  service.defaults.baseURL = 'https://localhost:5757/api'
+  service.defaults.baseURL = 'https://xmhr.ehi.ehealth.com/eHealthApi/api'
+  //service.defaults.baseURL = 'https://localhost:5757/api'
 
 } else {
   // 开发环境
+
+  //service.defaults.baseURL = 'https://xmhr.ehi.ehealth.com/eHealthApi/api'
   service.defaults.baseURL = 'https://localhost:5757/api'
 }
 
 service.interceptors.request.use(config => {
-  if (config.url !== '/sysusers/login'){
-    // config.headers['token1'] = window.sessionStorage.getItem('token');
-    // var domain=window.location.hostname;
-    // var username=window.sessionStorage.getItem('username');
-    // var password=window.sessionStorage.getItem('password');
-    // console.log(`${username}:${password}`)
-    // const auth=btoa(`${domain}\\${username}:${password}`);
-    // console.log(auth);
-    // config.headers['Authorization']=`Negotiate ${auth}`;
-    config.withCredentials=true
-  }
+  config.withCredentials=true
+  // if (config.url !== '/sysusers/login'){
+  //   // config.headers['token1'] = window.sessionStorage.getItem('token');
+  //   // var domain=window.location.hostname;
+  //   // var username=window.sessionStorage.getItem('username');
+  //   // var password=window.sessionStorage.getItem('password');
+  //   // console.log(`${username}:${password}`)
+  //   // const auth=btoa(`${domain}\\${username}:${password}`);
+  //   // console.log(auth);
+  //   // config.headers['Authorization']=`Negotiate ${auth}`;
+  //   config.withCredentials=true
+  // }
   return config
 }, err => {
   message.error('request failed')

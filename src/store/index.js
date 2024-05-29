@@ -57,7 +57,7 @@ export const store = createStore({
   getters,
   // strict: debug,
   plugins: [createPersistedState({
-    storage: window.sessionStorage,
+    storage: window.localStorage,
     // paths: ['user']
   })]
 })

@@ -1,5 +1,5 @@
 <template>
-  <NormalPage :pageInfo="pageRenderInfo" @CallPage="OnPage" />
+  <NormalPage ref="npage" :pageInfo="pageRenderInfo" @CallPage="OnPage" />
 
   <LeaveSettingOpera v-if="dialogFormVisible" :key="dialogKey" :operateType="operateType" :formValue="form"
     @operateBack="onMenuOpera" />
@@ -12,7 +12,7 @@ import LeaveSettingOpera from './LeaveSettingOpera.vue';
 import NormalPage from "@/components/page/normal.vue";
 import { message } from '@/utils/message';
 import { page } from '@/utils/pageinfo';
-
+const npage=ref();
 let idList = ref([]);
   
 let operateType = ref('add');
@@ -25,9 +25,10 @@ let tableColumn = [
   { prop: "leaveType", label: "假期类型", sort: false, filterValue: '', width: 120, scope: true, type: 'int' }
   , { prop: "qualification", label: "资格", sort: false, filterValue: '', width: 120, scope: true, type: 'int',   }
   , { prop: "limit", label: "限额", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
-  , { prop: "minUnit", label: "请假最小单位", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
+  , { prop: "minUnit", label: "最小单位", sort: false, filterValue: '', width: 100, scope: false, type: 'string' }
   , { prop: "isContainHoliday", label: "是否含节假日", sort: false, filterValue: '', width: 120, scope: true, type: 'int' }
-  , { prop: "calculationRule", label: "计算表达式", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
+  // , { prop: "calculationRule", label: "计算表达式", sort: false, filterValue: '', width: 160, scope: false, type: 'string' }
+  , { prop: "needHRApprove", label: "HR需审批", sort: false, filterValue: '', width: 110, scope: true, type: 'int' }
   , { prop: "description", label: "描述", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "createBy", label: "创建人", sort: false, filterValue: '', width: 120, scope: false, type: 'string' }
   , { prop: "createDate", label: "创建时间", sort: false, filterValue: '', width: 120, scope: false, type: 'date' }
@@ -47,6 +48,7 @@ const GetData = () => {
   let postJson = JSON.stringify(table.value.pageRequest);
   leaveSetting.getPageList(postJson).then(res => {
     if (res.code == "000") {
+      npage.value.Expose("table","closeLoading")
       table.value.tableData = res.result;
       table.value.total = res.other; 
     } else {
